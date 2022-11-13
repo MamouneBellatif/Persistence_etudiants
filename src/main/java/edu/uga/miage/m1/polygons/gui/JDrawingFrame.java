@@ -300,7 +300,7 @@ public class JDrawingFrame extends JFrame
 
     public boolean isInside(int eventX, int eventY, int shapeX, int shapeY) {
         //return is eventX and eventY inside the shape by a margin of 25
-        return (eventX >= shapeX - 50 && eventX <= shapeX + 50) && (eventY >= shapeY - 25 && eventY <= shapeY + 25);
+        return (eventX >= shapeX - 25 && eventX <= shapeX + 25) && (eventY >= shapeY - 25 && eventY <= shapeY + 25);
     }
     /**
      * Implements method for the <tt>MouseListener</tt> interface to initiate
@@ -309,12 +309,10 @@ public class JDrawingFrame extends JFrame
     **/
     public void mousePressed(MouseEvent evt)
     {
-//        System.out.println("mouse pressed");
         Graphics2D g2 = (Graphics2D) m_panel.getGraphics();
         ssL.forEach(s -> {
             if (isInside(evt.getX(), evt.getY(), s.getX(), s.getY())) {
                 System.out.println("contains");
-//                s.erase(g2);
                 toMove=s;
             }
         });
@@ -342,6 +340,12 @@ public class JDrawingFrame extends JFrame
 //        repaint();
     }
 
+    public void redrawAll() {
+        this.ssL.forEach(shape -> {
+            shape.draw((Graphics2D) m_panel.getGraphics());
+        });
+    }
+
     /**
      * Implements method for the <tt>MouseMotionListener</tt> interface to
      * move a dragged shape.
@@ -349,7 +353,7 @@ public class JDrawingFrame extends JFrame
     **/
     public void mouseDragged(MouseEvent evt)
     {
-//        System.out.println("mouse dragged");
+        System.out.println("mouse dragged");
         ssL.forEach(s -> {
             if (isInside(evt.getX(), evt.getY(), s.getX(), s.getY())) {
                 System.out.println("IN");
@@ -360,6 +364,12 @@ public class JDrawingFrame extends JFrame
 //                s.draw((Graphics2D) m_panel.getGraphics());
             }
         });
+        if (toMove!= null) {
+            this.eraseCanvas();
+            toMove.setX(evt.getX());
+            toMove.setY(evt.getY());
+            redrawAll();
+        }
     }
 
     //move the shape when dragged

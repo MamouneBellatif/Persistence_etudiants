@@ -55,6 +55,8 @@ public class Triangle implements SimpleShape, Visitable {
      * @param g2 The graphics object used for painting.
      */
     public void draw(Graphics2D g2) {
+        int m_x = this.m_x-25;
+        int m_y = this.m_y-25;
         g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
         GradientPaint gradient = new GradientPaint(m_x, m_y, Color.GREEN, m_x + 50, m_y, Color.WHITE);
         g2.setPaint(gradient);

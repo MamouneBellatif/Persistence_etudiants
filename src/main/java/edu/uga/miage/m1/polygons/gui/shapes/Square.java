@@ -58,11 +58,11 @@ public class Square implements SimpleShape, Visitable {
         g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
         GradientPaint gradient = new GradientPaint(m_x, m_y, Color.BLUE, m_x + 50, m_y, Color.WHITE);
         g2.setPaint(gradient);
-        g2.fill(new Rectangle2D.Double(m_x, m_y, 50, 50));
+        g2.fill(new Rectangle2D.Double(m_x-25, m_y-25, 50, 50));
 //        BasicStroke wideStroke = new BasicStroke(2.0f);
         g2.setColor(Color.black);
 //        g2.setStroke(wideStroke);
-        g2.draw(new Rectangle2D.Double(m_x, m_y, 50, 50));
+        g2.draw(new Rectangle2D.Double(m_x-25, m_y-25, 50, 50));
     }
 
     @Override
