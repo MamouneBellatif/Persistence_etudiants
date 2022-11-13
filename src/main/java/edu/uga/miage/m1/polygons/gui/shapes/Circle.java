@@ -37,8 +37,8 @@ public class Circle implements SimpleShape, Visitable {
     int m_y;
 
     public Circle(int x, int y) {
-        m_x = x - 25;
-        m_y = y - 25;
+        m_x = x;
+        m_y = y;
     }
 
     /**
@@ -56,6 +56,7 @@ public class Circle implements SimpleShape, Visitable {
         g2.setStroke(wideStroke);
         g2.draw(new Ellipse2D.Double(m_x, m_y, 50, 50));
     }
+
 
     @Override
     public void accept(Visitor visitor) {
@@ -78,4 +79,15 @@ public class Circle implements SimpleShape, Visitable {
     public int getY() {
         return m_y;
     }
+
+    // x and y setter
+
+public void setX(int x) {
+        m_x = x;
+    }
+    public void setY(int y) {
+        m_y = y;
+    }
+
+
 }

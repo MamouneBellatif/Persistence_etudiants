@@ -45,7 +45,7 @@ public class Square implements SimpleShape, Visitable {
     public Square(int x, int y) {
         m_x = x;
 //        m_x = x - 25;
-        m_x = x;
+        m_y = y;
 //        m_y = y - 25;
     }
 
@@ -59,9 +59,9 @@ public class Square implements SimpleShape, Visitable {
         GradientPaint gradient = new GradientPaint(m_x, m_y, Color.BLUE, m_x + 50, m_y, Color.WHITE);
         g2.setPaint(gradient);
         g2.fill(new Rectangle2D.Double(m_x, m_y, 50, 50));
-        BasicStroke wideStroke = new BasicStroke(2.0f);
+//        BasicStroke wideStroke = new BasicStroke(2.0f);
         g2.setColor(Color.black);
-        g2.setStroke(wideStroke);
+//        g2.setStroke(wideStroke);
         g2.draw(new Rectangle2D.Double(m_x, m_y, 50, 50));
     }
 
@@ -88,4 +88,15 @@ public class Square implements SimpleShape, Visitable {
     public int getY() {
         return m_y;
     }
+
+    @Override
+    public void setX(int x) {
+        m_x = x;
+    }
+
+    @Override
+    public void setY(int y) {
+        m_y = y;
+    }
+
 }

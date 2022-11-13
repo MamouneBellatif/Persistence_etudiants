@@ -25,6 +25,10 @@ public interface SimpleShape
     
     int getY();
 
+    void setX(int x);
+
+    void setY(int y);
+
     void accept(JSonVisitor v);
     void accept(XMLVisitor v);
 }

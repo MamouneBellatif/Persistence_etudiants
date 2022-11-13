@@ -61,7 +61,8 @@ public class JDrawingFrame extends JFrame
     implements MouseListener, MouseMotionListener
 {
     ArrayList<SimpleShape> ssL = new ArrayList<>();
-
+    int indexToMove;
+    SimpleShape toMove;
     private enum Shapes {SQUARE, TRIANGLE, CIRCLE,EXPORT,IMPORT,FILECHOOSER};
     private static final long serialVersionUID = 1L;
     private JToolBar m_toolbar;
@@ -135,37 +136,10 @@ public class JDrawingFrame extends JFrame
 
 
     }
-//
-//    public void addFileChooserBtn(){
-//        JButton fileBtn= new JButton();
-//        fileBtn.setText("test-file");
-//        m_buttons.put(Shapes.FILECHOOSER,fileBtn);
-//        fileBtn.setActionCommand("CHOOSE");
-//        fileBtn.addActionListener(new ActionListener() {
-//            @Override
-//            public void actionPerformed(ActionEvent e) {
-//                chooseFile();
-//            }
-//        });
-//    }
 
-//    public void chooseFile() {
-//        JFileChooser choose = new JFileChooser(
-//        FileSystemView.getFileSystemView().getHomeDirectory());
-//        choose.setDialogTitle("sauvegarder");
-//        choose.setDialogTitle("Selectionnez une image");
-//        choose.setAcceptAllFileFilterUsed(false);
-//        FileNameExtensionFilter filter = new FileNameExtensionFilter("json", "json", "gif");
-//        choose.addChoosableFileFilter(filter);
-//        int res = choose.showOpenDialog(null);
-//        if (res == JFileChooser.APPROVE_OPTION) {
-//            System.out.println(choose.getSelectedFile().getPath());
-//        }
-//    }
-
-//    }
 
     public void addImportedShapes() throws FileNotFoundException {
+        this.eraseCanvas();
         JsonArray jsonShapesArray = App.importJSON().getJsonArray("shapes");
         Graphics2D g2 = (Graphics2D) m_panel.getGraphics();
         System.out.println(m_panel);
@@ -305,6 +279,14 @@ public class JDrawingFrame extends JFrame
     	
     }
 
+    private void eraseCanvas()
+    {
+    	Graphics2D g2 = (Graphics2D) m_panel.getGraphics();
+    	g2.setColor(Color.WHITE);
+    	g2.fillRect(0, 0, m_panel.getWidth(), m_panel.getHeight());
+    	g2.setColor(Color.BLACK);
+    }
+
     /**
      * Implements an empty method for the <tt>MouseListener</tt> interface.
      * @param evt The associated mouse event.
@@ -315,6 +297,11 @@ public class JDrawingFrame extends JFrame
     	m_label.repaint();
     }
 
+
+    public boolean isInside(int eventX, int eventY, int shapeX, int shapeY) {
+        //return is eventX and eventY inside the shape by a margin of 25
+        return (eventX >= shapeX - 50 && eventX <= shapeX + 50) && (eventY >= shapeY - 25 && eventY <= shapeY + 25);
+    }
     /**
      * Implements method for the <tt>MouseListener</tt> interface to initiate
      * shape dragging.
@@ -322,6 +309,15 @@ public class JDrawingFrame extends JFrame
     **/
     public void mousePressed(MouseEvent evt)
     {
+//        System.out.println("mouse pressed");
+        Graphics2D g2 = (Graphics2D) m_panel.getGraphics();
+        ssL.forEach(s -> {
+            if (isInside(evt.getX(), evt.getY(), s.getX(), s.getY())) {
+                System.out.println("contains");
+//                s.erase(g2);
+                toMove=s;
+            }
+        });
     }
 
     /**
@@ -331,6 +327,19 @@ public class JDrawingFrame extends JFrame
     **/
     public void mouseReleased(MouseEvent evt)
     {
+        if (m_panel.contains(evt.getX(),evt.getY()) && toMove != null) {
+//            toMove.erase((Graphics2D) m_panel.getGraphics());
+            this.eraseCanvas();
+            toMove.setX(evt.getX());
+            toMove.setY(evt.getY());
+            toMove.draw((Graphics2D) m_panel.getGraphics());
+            ssL.forEach(shape -> {
+                    shape.draw((Graphics2D) m_panel.getGraphics());
+            });
+            toMove=null;
+//            toMove.draw((Graphics2D) m_panel.getGraphics());
+        }
+//        repaint();
     }
 
     /**
@@ -340,8 +349,27 @@ public class JDrawingFrame extends JFrame
     **/
     public void mouseDragged(MouseEvent evt)
     {
+//        System.out.println("mouse dragged");
+        ssL.forEach(s -> {
+            if (isInside(evt.getX(), evt.getY(), s.getX(), s.getY())) {
+                System.out.println("IN");
+//                toMove=s;
+//                s.erase((Graphics2D) m_panel.getGraphics());
+//                s.setX(evt.getX());
+//                s.setY(evt.getY());
+//                s.draw((Graphics2D) m_panel.getGraphics());
+            }
+        });
     }
 
+    //move the shape when dragged
+//    public void moveShape(MouseEvent evt) {
+//        Graphics2D g2 = (Graphics2D) m_panel.getGraphics();
+//        toMove.erase(g2);
+//        toMove.setX(evt.getX());
+//        toMove.setY(evt.getY());
+//        toMove.draw(g2);
+//    }
     /**
      * Implements an empty method for the <tt>MouseMotionListener</tt>
      * interface.
