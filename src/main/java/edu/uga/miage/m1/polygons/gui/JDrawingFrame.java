@@ -57,6 +57,7 @@ import edu.uga.miage.m1.polygons.gui.shapes.*;
 public class JDrawingFrame extends JFrame
     implements MouseListener, MouseMotionListener
 {
+    private MemoryShapes memoryShapes;
     ArrayList<SimpleShape> ssL = new ArrayList<>();
     private SelectionRectangle selectionShape;
     int indexToMove;
@@ -258,15 +259,20 @@ public class JDrawingFrame extends JFrame
                     SimpleShape s=new Circle(evt.getX(), evt.getY());
                                     s.draw(g2);
                                     ssL.add(s);
+                                    memoryShapes.push(ssL);
                 break;
 	    		case TRIANGLE: 		SimpleShape s2 =new Triangle(evt.getX(), evt.getY());
                                         s2.draw(g2);
                                         ssL.add(s2);
-									break;
+                    memoryShapes.push(ssL);
+
+                    break;
         		case SQUARE: 		SimpleShape s3 = new Square(evt.getX(), evt.getY());
                                     s3.draw(g2);
                                     ssL.add(s3);
-                break;
+                    memoryShapes.push(ssL);
+
+                    break;
         		default: 			System.out.println("No shape named " + m_selected);
  
         	}
@@ -288,6 +294,8 @@ public class JDrawingFrame extends JFrame
     	g2.setColor(Color.WHITE);
     	g2.fillRect(0, 0, m_panel.getWidth(), m_panel.getHeight());
     	g2.setColor(Color.BLACK);
+//        repaint();
+
     }
 
     /**
@@ -399,6 +407,7 @@ public class JDrawingFrame extends JFrame
     }
     public void redrawAll() {
         this.ssL.forEach(shape -> shape.draw((Graphics2D) m_panel.getGraphics()));
+        memoryShapes.push(ssL);
     }
 
     int oldX;
@@ -417,10 +426,10 @@ public class JDrawingFrame extends JFrame
             selectedShapes.forEach(s ->{
                 int dragFactorX = 1;
                 int dragFactorY= 1;
-                if(evt.getX()-this.oldX<0){
+                if(evt.getX()-this.oldX < 0){
                     dragFactorX = -1;
                 }
-                if (evt.getX()-this.oldY < 0){
+                if (evt.getY()-this.oldY < 0){
                     dragFactorY = -1;
                 }
                 System.out.println("dragging selected shapes");

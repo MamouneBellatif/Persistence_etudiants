@@ -1,1 +1,1 @@
-{ "shapes":[ { "type": "square", "x": 258, "y": 91 }, {"type": "triangle", "x": 140, "y": 86 },  { "type": "circle", "x": 194, "y": 192 }] }
+{ "shapes":[ { "type": "square", "x": 173, "y": 88 }, { "type": "square", "x": 243, "y": 163 },  { "type": "circle", "x": 258, "y": 80 }] }
