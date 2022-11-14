@@ -44,10 +44,7 @@ import javax.swing.filechooser.FileSystemView;
 
 import edu.uga.miage.m1.polygons.gui.persistence.JSonVisitor;
 import edu.uga.miage.m1.polygons.gui.persistence.XMLVisitor;
-import edu.uga.miage.m1.polygons.gui.shapes.Circle;
-import edu.uga.miage.m1.polygons.gui.shapes.SimpleShape;
-import edu.uga.miage.m1.polygons.gui.shapes.Square;
-import edu.uga.miage.m1.polygons.gui.shapes.Triangle;
+import edu.uga.miage.m1.polygons.gui.shapes.*;
 
 
 /**
@@ -61,6 +58,7 @@ public class JDrawingFrame extends JFrame
     implements MouseListener, MouseMotionListener
 {
     ArrayList<SimpleShape> ssL = new ArrayList<>();
+    private SelectionRectangle selectionShape;
     int indexToMove;
     SimpleShape toMove;
     private enum Shapes {SQUARE, TRIANGLE, CIRCLE,EXPORT,IMPORT,FILECHOOSER};
@@ -140,6 +138,7 @@ public class JDrawingFrame extends JFrame
 
     public void addImportedShapes() throws FileNotFoundException {
         this.eraseCanvas();
+        ssL.clear();
         JsonArray jsonShapesArray = App.importJSON().getJsonArray("shapes");
         Graphics2D g2 = (Graphics2D) m_panel.getGraphics();
         System.out.println(m_panel);
@@ -309,13 +308,17 @@ public class JDrawingFrame extends JFrame
     **/
     public void mousePressed(MouseEvent evt)
     {
-        Graphics2D g2 = (Graphics2D) m_panel.getGraphics();
         ssL.forEach(s -> {
             if (isInside(evt.getX(), evt.getY(), s.getX(), s.getY())) {
                 System.out.println("contains");
                 toMove=s;
             }
         });
+        if (toMove==null) {
+            this.selectionShape = new SelectionRectangle(evt.getX(), evt.getY());
+
+            toMove.draw((Graphics2D) m_panel.getGraphics());
+        }
     }
 
     /**
@@ -327,23 +330,17 @@ public class JDrawingFrame extends JFrame
     {
         if (m_panel.contains(evt.getX(),evt.getY()) && toMove != null) {
 //            toMove.erase((Graphics2D) m_panel.getGraphics());
-            this.eraseCanvas();
             toMove.setX(evt.getX());
             toMove.setY(evt.getY());
             toMove.draw((Graphics2D) m_panel.getGraphics());
-            ssL.forEach(shape -> {
-                    shape.draw((Graphics2D) m_panel.getGraphics());
-            });
+            this.eraseCanvas();
+            this.redrawAll();
             toMove=null;
-//            toMove.draw((Graphics2D) m_panel.getGraphics());
         }
-//        repaint();
     }
 
     public void redrawAll() {
-        this.ssL.forEach(shape -> {
-            shape.draw((Graphics2D) m_panel.getGraphics());
-        });
+        this.ssL.forEach(shape -> shape.draw((Graphics2D) m_panel.getGraphics()));
     }
 
     /**
@@ -354,32 +351,14 @@ public class JDrawingFrame extends JFrame
     public void mouseDragged(MouseEvent evt)
     {
         System.out.println("mouse dragged");
-        ssL.forEach(s -> {
-            if (isInside(evt.getX(), evt.getY(), s.getX(), s.getY())) {
-                System.out.println("IN");
-//                toMove=s;
-//                s.erase((Graphics2D) m_panel.getGraphics());
-//                s.setX(evt.getX());
-//                s.setY(evt.getY());
-//                s.draw((Graphics2D) m_panel.getGraphics());
-            }
-        });
         if (toMove!= null) {
-            this.eraseCanvas();
             toMove.setX(evt.getX());
             toMove.setY(evt.getY());
+            this.eraseCanvas();
             redrawAll();
         }
     }
 
-    //move the shape when dragged
-//    public void moveShape(MouseEvent evt) {
-//        Graphics2D g2 = (Graphics2D) m_panel.getGraphics();
-//        toMove.erase(g2);
-//        toMove.setX(evt.getX());
-//        toMove.setY(evt.getY());
-//        toMove.draw(g2);
-//    }
     /**
      * Implements an empty method for the <tt>MouseMotionListener</tt>
      * interface.

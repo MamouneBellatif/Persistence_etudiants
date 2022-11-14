@@ -1,1 +1,1 @@
-{ "shapes":[ { "type": "square", "x": 189, "y": 240 }, { "type": "square", "x": 293, "y": 65 }, { "type": "square", "x": 79, "y": 146 }, { "type": "square", "x": 247, "y": 211 }, { "type": "square", "x": 249, "y": 67 }, { "type": "square", "x": 139, "y": 27 }, { "type": "square", "x": 226, "y": 154 }, {"type": "triangle", "x": 211, "y": 51 },  { "type": "circle", "x": 50, "y": 61 }] }
+{ "shapes":[ { "type": "square", "x": 258, "y": 91 }, {"type": "triangle", "x": 140, "y": 86 },  { "type": "circle", "x": 194, "y": 192 }] }

@@ -44,9 +44,7 @@ public class Square implements SimpleShape, Visitable {
 
     public Square(int x, int y) {
         m_x = x;
-//        m_x = x - 25;
         m_y = y;
-//        m_y = y - 25;
     }
 
     /**
