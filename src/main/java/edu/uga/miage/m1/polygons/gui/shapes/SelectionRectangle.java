@@ -9,14 +9,19 @@ import java.awt.Graphics2D;
 import java.awt.RenderingHints;
 import java.awt.geom.Rectangle2D;
 
+import static java.lang.Math.abs;
+
 public class SelectionRectangle implements SimpleShape {
 
         int m_x;
 
-        int new_x;
+        private int new_x;
         int m_y;
 
-        int new_y;
+        private int new_y;
+
+        private int width;
+        private int length;
         public SelectionRectangle(int x, int y) {
             m_x = x;
             m_y = y;
@@ -73,35 +78,52 @@ public class SelectionRectangle implements SimpleShape {
         BasicStroke wideStroke = new BasicStroke(2.0f);
         g2.setStroke(wideStroke);
         g2.draw(new Rectangle2D.Double(new_x, new_y, width, length));
+
+        this.width= abs(width);
+        this.length = abs(length);
     }
 
+        public int getWidth() {
+            return width;
+        }
 
+        public int getLength() {
+            return length;
+        }
         @Override
         public int getX() {
             return m_x;
         }
 
-    @Override
-    public int getY() {
-    return m_y;
-    }
+        @Override
+        public int getY() {
+        return m_y;
+        }
 
-    @Override
-    public void setX(int x) {
-        this.m_x = x;
-    }
+        @Override
+        public void setX(int x) {
+            this.m_x = x;
+        }
 
-    @Override
-    public void setY(int y) {
-        this.m_y = y;
-    }
+        @Override
+        public void setY(int y) {
+            this.m_y = y;
+        }
 
-    @Override
-    public void accept(JSonVisitor v) {
-        //placeholder
-    }
-    @Override
-    public void accept(XMLVisitor v) {
+        @Override
+        public void accept(JSonVisitor v) {
             //placeholder
+        }
+        @Override
+        public void accept(XMLVisitor v) {
+                //placeholder
+        }
+
+        public int getNewX(){
+            return new_x;
+        }
+
+        public int getNewY(){
+            return new_y;
+        }
     }
-}

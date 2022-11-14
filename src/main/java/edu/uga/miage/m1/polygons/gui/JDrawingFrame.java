@@ -61,6 +61,7 @@ public class JDrawingFrame extends JFrame
     private SelectionRectangle selectionShape;
     int indexToMove;
     SimpleShape toMove;
+    ArrayList<SimpleShape> selectedShapes = new ArrayList<>();
     private int selectX;
     private int selectY;
 
@@ -304,6 +305,8 @@ public class JDrawingFrame extends JFrame
         //return is eventX and eventY inside the shape by a margin of 25
         return (eventX >= shapeX - 25 && eventX <= shapeX + 25) && (eventY >= shapeY - 25 && eventY <= shapeY + 25);
     }
+
+    boolean isTranslating = false;
     /**
      * Implements method for the <tt>MouseListener</tt> interface to initiate
      * shape dragging.
@@ -311,16 +314,27 @@ public class JDrawingFrame extends JFrame
     **/
     public void mousePressed(MouseEvent evt)
     {
-        ssL.forEach(s -> {
-            if (isInside(evt.getX(), evt.getY(), s.getX(), s.getY())) {
-                System.out.println("contains");
-                toMove=s;
-            }
-        });
-        if (toMove==null) {
-            this.selectionShape = new SelectionRectangle(evt.getX(), evt.getY());
-//            this.selectionShape .drawSelection((Graphics2D) m_panel.getGraphics(),evt.getX(), evt.getY());
+        oldX = evt.getX();
+        oldY = evt.getY();
+        System.out.println(selectedShapes.size());
+        if (!selectedShapes.isEmpty()){
+            isTranslating= true;
+            System.out.println("not empty");
         }
+        else {
+            ssL.forEach(s -> {
+                if (isInside(evt.getX(), evt.getY(), s.getX(), s.getY())) {
+                    System.out.println("contains");
+                    toMove = s;
+                }
+            });
+            if (toMove == null) {
+                this.selectionShape = new SelectionRectangle(evt.getX(), evt.getY());
+//            this.selectionShape .drawSelection((Graphics2D) m_panel.getGraphics(),evt.getX(), evt.getY());
+            }
+        }
+
+
     }
 
     /**
@@ -330,6 +344,13 @@ public class JDrawingFrame extends JFrame
     **/
     public void mouseReleased(MouseEvent evt)
     {
+        if(isTranslating){
+            isTranslating = false;
+            selectedShapes.clear();
+            eraseCanvas();
+            redrawAll();
+            selectionShape = null;
+        }
         if (m_panel.contains(evt.getX(),evt.getY()) && toMove != null) {
 //            toMove.erase((Graphics2D) m_panel.getGraphics());
             toMove.setX(evt.getX());
@@ -339,12 +360,49 @@ public class JDrawingFrame extends JFrame
             this.redrawAll();
             toMove=null;
         }
+
+        //si on a initié la selection, on ajoute les shapes
+        if (this.selectionShape != null) {
+            this.addSelectedShapes();
+        }
+
+//        if (!selectedShapes.isEmpty()){
+//            selectedShapes.clear();
+//        }
+
+
+
+//        isTranslating= false;
     }
 
+//    public moveSelectedShapes(int x, int y) {
+//        this.selectedShapes.forEach(s -> {
+//            s.setX(x);
+//            s.setY(y);
+//            s.draw((Graphics2D) m_panel.getGraphics());
+//        });
+//    }
+
+    //retourne vrai si la shape est dans la selection
+    public boolean inSelection(SimpleShape shape, SelectionRectangle selection) {
+        return  selection.getNewX() < shape.getX() && shape.getX() < selection.getNewX() + selection.getWidth() &&
+                selection.getNewY() < shape.getY() && shape.getY() < selection.getNewY() + selection.getLength();
+    }
+    public void addSelectedShapes() {
+        ssL.forEach(s -> {
+            if (this.inSelection(s, this.selectionShape)) {
+                selectedShapes.add(s);
+                System.out.println("shape in selection");
+            }
+        });
+        System.out.println(selectedShapes.size());
+    }
     public void redrawAll() {
         this.ssL.forEach(shape -> shape.draw((Graphics2D) m_panel.getGraphics()));
     }
 
+    int oldX;
+    int oldY;
     /**
      * Implements method for the <tt>MouseMotionListener</tt> interface to
      * move a dragged shape.
@@ -354,32 +412,49 @@ public class JDrawingFrame extends JFrame
     {
 //        System.out.println("mouse dragged");
         //deplacement de la forme
-        if (toMove!= null) {
-            toMove.setX(evt.getX());
-            toMove.setY(evt.getY());
+        if(isTranslating) {
+            System.out.println("translating");
+            selectedShapes.forEach(s ->{
+                int dragFactorX = 1;
+                int dragFactorY= 1;
+                if(evt.getX()-this.oldX<0){
+                    dragFactorX = -1;
+                }
+                if (evt.getX()-this.oldY < 0){
+                    dragFactorY = -1;
+                }
+                System.out.println("dragging selected shapes");
+                s.setX(s.getX()+(dragFactorX));
+//                s.setX(s.getX()+(evt.getX()-this.oldX));
+                s.setY(s.getY()+(dragFactorY));
+//                s.setY(s.getY()+(evt.getY()-this.oldY));
+            });
                 this.eraseCanvas();
-            redrawAll();
+                this.redrawAll();
         }
+        else {
+            if (toMove != null) {
+                toMove.setX(evt.getX());
+                toMove.setY(evt.getY());
+                this.eraseCanvas();
+                redrawAll();
+            }
 
-        //selection rectangle
-        if (selectionShape != null) {
-            eraseCanvas();
-            redrawAll();
-            int width = evt.getX()-selectionShape.getX();
-            System.out.println("width: "+width);
-            int height = evt.getY()-selectionShape.getY();
-            System.out.println("height: "+height);
-
-//            if (height<0 || width<0) {
-                selectionShape.drawSelectionTest((Graphics2D) m_panel.getGraphics(),width, height);
-//            } else {
-//                selectionShape.drawSelection((Graphics2D) m_panel.getGraphics(),width, height);
-//            }
-//            selectionShape.drawSelection((Graphics2D) m_panel.getGraphics(),width, height);
-
-//            selectionShape.drawSelectionTest((Graphics2D) m_panel.getGraphics(),width, height);
+            //selection rectangle
+            if (selectionShape != null) {
+                eraseCanvas();
+                redrawAll();
+                int width = evt.getX() - selectionShape.getX();
+//                System.out.println("width: " + width);
+                int height = evt.getY() - selectionShape.getY();
+//                System.out.println("height: " + height);
+                selectionShape.drawSelectionTest((Graphics2D) m_panel.getGraphics(), width, height);
+            }
         }
+//        if(!selectedShapes.isEmpty()) {
+
     }
+
 
     /**
      * Implements an empty method for the <tt>MouseMotionListener</tt>
