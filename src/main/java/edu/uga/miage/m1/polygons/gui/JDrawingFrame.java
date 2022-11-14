@@ -61,6 +61,9 @@ public class JDrawingFrame extends JFrame
     private SelectionRectangle selectionShape;
     int indexToMove;
     SimpleShape toMove;
+    private int selectX;
+    private int selectY;
+
     private enum Shapes {SQUARE, TRIANGLE, CIRCLE,EXPORT,IMPORT,FILECHOOSER};
     private static final long serialVersionUID = 1L;
     private JToolBar m_toolbar;
@@ -316,8 +319,7 @@ public class JDrawingFrame extends JFrame
         });
         if (toMove==null) {
             this.selectionShape = new SelectionRectangle(evt.getX(), evt.getY());
-
-            toMove.draw((Graphics2D) m_panel.getGraphics());
+//            this.selectionShape .drawSelection((Graphics2D) m_panel.getGraphics(),evt.getX(), evt.getY());
         }
     }
 
@@ -350,12 +352,32 @@ public class JDrawingFrame extends JFrame
     **/
     public void mouseDragged(MouseEvent evt)
     {
-        System.out.println("mouse dragged");
+//        System.out.println("mouse dragged");
+        //deplacement de la forme
         if (toMove!= null) {
             toMove.setX(evt.getX());
             toMove.setY(evt.getY());
-            this.eraseCanvas();
+                this.eraseCanvas();
             redrawAll();
+        }
+
+        //selection rectangle
+        if (selectionShape != null) {
+            eraseCanvas();
+            redrawAll();
+            int width = evt.getX()-selectionShape.getX();
+            System.out.println("width: "+width);
+            int height = evt.getY()-selectionShape.getY();
+            System.out.println("height: "+height);
+
+//            if (height<0 || width<0) {
+                selectionShape.drawSelectionTest((Graphics2D) m_panel.getGraphics(),width, height);
+//            } else {
+//                selectionShape.drawSelection((Graphics2D) m_panel.getGraphics(),width, height);
+//            }
+//            selectionShape.drawSelection((Graphics2D) m_panel.getGraphics(),width, height);
+
+//            selectionShape.drawSelectionTest((Graphics2D) m_panel.getGraphics(),width, height);
         }
     }
 

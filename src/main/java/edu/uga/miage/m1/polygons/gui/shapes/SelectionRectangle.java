@@ -13,8 +13,10 @@ public class SelectionRectangle implements SimpleShape {
 
         int m_x;
 
+        int new_x;
         int m_y;
 
+        int new_y;
         public SelectionRectangle(int x, int y) {
             m_x = x;
             m_y = y;
@@ -38,24 +40,46 @@ public class SelectionRectangle implements SimpleShape {
         }
 
         //redraw the rectangle when the mouse is dragged
-    public void draw(Graphics2D g2, int width, int length) {
-        int m_x = this.m_x-25;
-        int m_y = this.m_y-25;
+    public void drawSelection(Graphics2D g2, int width, int length) {
+
+        Color color = new Color(206,234,255,127);
         g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-        GradientPaint gradient = new GradientPaint(m_x, m_y, Color.RED, m_x + width, m_y, Color.WHITE);
+        GradientPaint gradient = new GradientPaint(m_x, m_y, color, m_x , m_y, color);
         g2.setPaint(gradient);
         g2.fill(new Rectangle2D.Double(m_x, m_y, width, length));
+        g2.setColor(new Color(206,234,255,127));
         BasicStroke wideStroke = new BasicStroke(2.0f);
-        g2.setColor(Color.black);
         g2.setStroke(wideStroke);
         g2.draw(new Rectangle2D.Double(m_x, m_y, width, length));
     }
 
+    public void drawSelectionTest(Graphics2D g2, int width, int length) {
+            new_x = m_x ;
+            new_y = m_y ;
+            if(width<0){
+                new_x = m_x + width;
+                width = -width;
+            }
+            if (length<0){
+                new_y = m_y + length;
+                length = -length;
+            }
+        Color color = new Color(206,234,255,127);
+        g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+        GradientPaint gradient = new GradientPaint(new_x, new_y, color, new_x , new_y, color);
+        g2.setPaint(gradient);
+        g2.fill(new Rectangle2D.Double(new_x, new_y, width, length));
+        g2.setColor(new Color(206,234,255,127));
+        BasicStroke wideStroke = new BasicStroke(2.0f);
+        g2.setStroke(wideStroke);
+        g2.draw(new Rectangle2D.Double(new_x, new_y, width, length));
+    }
+
 
         @Override
-    public int getX() {
-    return m_x;
-    }
+        public int getX() {
+            return m_x;
+        }
 
     @Override
     public int getY() {
