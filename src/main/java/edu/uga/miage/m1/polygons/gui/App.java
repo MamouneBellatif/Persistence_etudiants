@@ -11,6 +11,7 @@ import java.io.*;
 
 import java.util.ArrayList;
 import javax.json.JsonReader;
+import javax.swing.*;
 
 /**
  * Hello world!
@@ -75,9 +76,13 @@ public class App
 
     public static void main( String[] args ) throws InterruptedException, FileNotFoundException {
 
-        System.out.println(App.importJSON());
+//        System.out.println(App.importJSON());
 
-
-		GUIHelper.showOnFrame("test");
+        SwingUtilities.invokeLater(new Runnable() {
+            @Override
+            public void run() {
+            GUIHelper.showOnFrame("test");
+                }
+            });
+        }
 	}
-}

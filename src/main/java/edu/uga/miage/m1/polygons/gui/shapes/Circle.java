@@ -59,17 +59,14 @@ public class Circle implements SimpleShape, Visitable {
         g2.draw(new Ellipse2D.Double(m_x, m_y, 50, 50));
     }
 
-
     @Override
     public void accept(Visitor visitor) {
-    // TODO
         visitor.visit(this);
     }
     @Override
     public void accept(JSonVisitor visitor) {
         visitor.visit(this);
     }
-
     @Override
     public void accept(XMLVisitor visitor) {
         visitor.visit(this);
@@ -77,14 +74,11 @@ public class Circle implements SimpleShape, Visitable {
     public int getX() {
         return m_x;
     }
-
     public int getY() {
         return m_y;
     }
-
     // x and y setter
-
-public void setX(int x) {
+    public void setX(int x) {
         m_x = x;
     }
     public void setY(int y) {

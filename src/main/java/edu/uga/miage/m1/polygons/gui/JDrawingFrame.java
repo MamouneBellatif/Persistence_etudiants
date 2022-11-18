@@ -19,17 +19,11 @@ package edu.uga.miage.m1.polygons.gui;
  */
 
 
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.Graphics2D;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
-import java.awt.event.MouseMotionListener;
+import java.awt.*;
+import java.awt.event.*;
 import java.io.FileNotFoundException;
 import java.nio.file.FileSystem;
+import java.sql.SQLOutput;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -41,6 +35,7 @@ import javax.json.JsonValue;
 import javax.swing.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.filechooser.FileSystemView;
+import javax.xml.parsers.SAXParser;
 
 import edu.uga.miage.m1.polygons.gui.persistence.JSonVisitor;
 import edu.uga.miage.m1.polygons.gui.persistence.XMLVisitor;
@@ -57,26 +52,153 @@ import edu.uga.miage.m1.polygons.gui.shapes.*;
 public class JDrawingFrame extends JFrame
     implements MouseListener, MouseMotionListener
 {
-    private MemoryShapes memoryShapes;
-    ArrayList<SimpleShape> ssL = new ArrayList<>();
+    private static MemoryShapes memoryShapes;
+    public static ArrayList<SimpleShape> ssL = new ArrayList<>();
     private SelectionRectangle selectionShape;
     int indexToMove;
     SimpleShape toMove;
     ArrayList<SimpleShape> selectedShapes = new ArrayList<>();
-    private int selectX;
-    private int selectY;
+
 
     private enum Shapes {SQUARE, TRIANGLE, CIRCLE,EXPORT,IMPORT,FILECHOOSER};
     private static final long serialVersionUID = 1L;
     private JToolBar m_toolbar;
     private Shapes m_selected;
-    private JPanel m_panel;
+    private static JPanel m_panel;
     private JLabel m_label;
     private ActionListener m_reusableActionListener = new ShapeActionListener();
 
-    public void importJSON(){
+    //method that listen to ctrl+z
+
+
+    /**
+     * Default constructor that populates the main window.
+     * @param frameName
+     **/
+    public JDrawingFrame(String frameName)
+    {
+        super(frameName);
+        // Instantiates components
+        m_toolbar = new JToolBar("Toolbar");
+        m_panel = new JPanel();
+        m_panel.setBackground(Color.WHITE);
+        m_panel.setMinimumSize(new Dimension(400, 400));
+        m_panel.setLayout(null);
+        m_panel.addMouseListener(this);
+        this.setFocusable(true);
+
+        this.addKeyListener(new KeyListener(){
+            @Override
+            public void keyTyped(KeyEvent e) {
+//                System.out.println("keyTyped");
+                // redo and undo
+//                if(e.getKeyCode() == KeyEvent.VK_W && e.isControlDown()){
+//                    System.out.println("ctrl+z");
+//                    //undo
+//                    ssL = memoryShapes.undo();
+//                    eraseCanvas();
+//                    redrawAll();
+
+//                        m_panel.removeAll();
+//                        for(SimpleShape ss : undo){
+//                            m_panel.add((Component) ss);
+//                        }
+//                        m_panel.repaint();
+//                    }
+//                }
+            }
+
+            @Override
+            public void keyPressed(KeyEvent e) {
+                //undo
+//                System.out.println("keyPressed");
+                if(e.getKeyCode() == KeyEvent.VK_Z && e.isControlDown()){
+                    System.out.println("ctrl+z");
+                    ArrayList<SimpleShape> undo = memoryShapes.undo();
+                    if(undo != null){
+                        System.out.println("undo not null");
+                        JDrawingFrame.ssL=undo;
+                        JDrawingFrame.eraseCanvas();
+                        redrawAll();
+                        boolean isUndoing = true;
+                    }
+                }
+            }
+
+            @Override
+            public void keyReleased(KeyEvent e) {
+//                System.out.println("keyReleased");
+            }
+        });
+        this.setFocusable(true);
+        m_panel.addMouseMotionListener(this);
+        m_label = new JLabel(" ", JLabel.LEFT);
+
+        // Fills the panel
+        setLayout(new BorderLayout());
+        add(m_toolbar, BorderLayout.NORTH);
+        add(m_panel, BorderLayout.CENTER);
+        add(m_label, BorderLayout.SOUTH);
+
+        // Add shapes in the menu
+        addShape(Shapes.SQUARE, new ImageIcon(getClass().getResource("images/square.png")));
+        addShape(Shapes.TRIANGLE, new ImageIcon(getClass().getResource("images/triangle.png")));
+        addShape(Shapes.CIRCLE, new ImageIcon(getClass().getResource("images/circle.png")));
+
+        addExportButton();
+        addImportButton();
+        setPreferredSize(new Dimension(400, 400));
+
+        this.memoryShapes = new MemoryShapes();
 
     }
+
+//    public class undoListener implements KeyListener{
+//        @Override
+//        public void keyTyped(KeyEvent e) {
+//            //listen to control + z and undo
+//            System.out.println("keyTyoed");
+//
+//            if (e.getKeyCode() == KeyEvent.VK_Z && e.isControlDown()) {
+//                System.out.println("keyTyoed");
+//                ArrayList<SimpleShape> shapes = memoryShapes.undo();
+//                if (shapes != null) {
+//                    ssL = shapes;
+//                    eraseCanvas();
+//                    redrawAll();
+//                }
+//            }
+//            //listen to control + y and redo
+//            if (e.getKeyCode() == KeyEvent.VK_Y && e.isControlDown()) {
+//                ArrayList<SimpleShape> shapes = memoryShapes.redo();
+//                if (shapes != null) {
+//                    ssL = shapes;
+//                    eraseCanvas();
+//                    redrawAll();
+//                }
+//            }
+//        }
+//
+//        @Override
+//        public void keyPressed(KeyEvent e) {
+//            System.out.println("pressed");
+//            if (e.getKeyCode() == KeyEvent.VK_Z && e.isControlDown()) {
+//                ArrayList<SimpleShape> shapes = memoryShapes.cancel();
+//                if (shapes != null) {
+//                    ssL = shapes;
+//                    eraseCanvas();
+//                    redrawAll();
+//                }
+//            }
+//        }
+//
+//        @Override
+//        public void keyReleased(KeyEvent e) {
+//            System.out.println("released");
+//        }
+//    }
+
+
     public void  export(){
         System.out.println("export");
         ArrayList<JSonVisitor> arrayList = new ArrayList<>();
@@ -105,40 +227,7 @@ public class JDrawingFrame extends JFrame
      */
     private Map<Shapes, JButton> m_buttons = new HashMap<>();
 
-    /**
-     * Default constructor that populates the main window.
-     * @param frameName 
-    **/
-    public JDrawingFrame(String frameName)
-    {
-        super(frameName);
-        // Instantiates components
-        m_toolbar = new JToolBar("Toolbar");
-        m_panel = new JPanel();
-        m_panel.setBackground(Color.WHITE);
-        m_panel.setMinimumSize(new Dimension(400, 400));
-        m_panel.setLayout(null);
-        m_panel.addMouseListener(this);
-        m_panel.addMouseMotionListener(this);
-        m_label = new JLabel(" ", JLabel.LEFT);
-        
-        // Fills the panel
-        setLayout(new BorderLayout());
-        add(m_toolbar, BorderLayout.NORTH);
-        add(m_panel, BorderLayout.CENTER);
-        add(m_label, BorderLayout.SOUTH);
-        
-        // Add shapes in the menu
-        addShape(Shapes.SQUARE, new ImageIcon(getClass().getResource("images/square.png")));
-        addShape(Shapes.TRIANGLE, new ImageIcon(getClass().getResource("images/triangle.png")));
-        addShape(Shapes.CIRCLE, new ImageIcon(getClass().getResource("images/circle.png")));
 
-        addExportButton();
-        addImportButton();
-        setPreferredSize(new Dimension(400, 400));
-
-
-    }
 
 
     public void addImportedShapes() throws FileNotFoundException {
@@ -166,20 +255,24 @@ public class JDrawingFrame extends JFrame
                     SimpleShape s = new Circle(xInt, yInt);
                     s.draw(g2);
                     ssL.add(s);
+                    save();
                     break;
 
                 case "SQUARE":
                     SimpleShape s3 = new Square(xInt, yInt);
                     s3.draw(g2);
                     ssL.add(s3);
+                    save();
                     break;
 
                 case "TRIANGLE":
                     SimpleShape s2 =new Triangle(xInt, yInt);
                     s2.draw(g2);
                     ssL.add(s2);
+                    save();
                     break;
             }
+            save();
         }
     }
 
@@ -259,21 +352,22 @@ public class JDrawingFrame extends JFrame
                     SimpleShape s=new Circle(evt.getX(), evt.getY());
                                     s.draw(g2);
                                     ssL.add(s);
-                                    memoryShapes.push(ssL);
+                                    save();
                 break;
 	    		case TRIANGLE: 		SimpleShape s2 =new Triangle(evt.getX(), evt.getY());
                                         s2.draw(g2);
                                         ssL.add(s2);
-                    memoryShapes.push(ssL);
+                                        save();
 
                     break;
         		case SQUARE: 		SimpleShape s3 = new Square(evt.getX(), evt.getY());
                                     s3.draw(g2);
                                     ssL.add(s3);
-                    memoryShapes.push(ssL);
+                                    save();
 
                     break;
         		default: 			System.out.println("No shape named " + m_selected);
+                break;
  
         	}
         }
@@ -288,15 +382,34 @@ public class JDrawingFrame extends JFrame
     	
     }
 
-    private void eraseCanvas()
+    public static void eraseCanvas()
     {
-    	Graphics2D g2 = (Graphics2D) m_panel.getGraphics();
-    	g2.setColor(Color.WHITE);
-    	g2.fillRect(0, 0, m_panel.getWidth(), m_panel.getHeight());
-    	g2.setColor(Color.BLACK);
-//        repaint();
+        m_panel.update(m_panel.getGraphics());
+//            m_panel.getGraphics().clearRect(0, 0, m_panel.getWidth(), m_panel.getHeight());
+//
+//    	Graphics2D g2 = (Graphics2D) m_panel.getGraphics();
+//    	g2.setColor(Color.WHITE);
+//    	g2.fillRect(0, 0, m_panel.getWidth(), m_panel.getHeight());
 
     }
+
+    //method that redraw all the shapes in the list every millisecond
+    @Override
+    public void paintComponents(Graphics g) {
+        super.paintComponents(g);
+        Graphics2D g2d = (Graphics2D) m_panel.getGraphics();
+        for (SimpleShape shape : ssL) {
+            shape.draw( g2d);
+        }
+    }
+
+    //new thread for a runnable
+
+
+
+    //thread that keeps cleaning canva and repating with the dhapeso on thel list
+
+
 
     /**
      * Implements an empty method for the <tt>MouseListener</tt> interface.
@@ -324,18 +437,18 @@ public class JDrawingFrame extends JFrame
     {
         oldX = evt.getX();
         oldY = evt.getY();
-        System.out.println(selectedShapes.size());
         if (!selectedShapes.isEmpty()){
             isTranslating= true;
-            System.out.println("not empty");
+//            save();
         }
         else {
-            ssL.forEach(s -> {
+//            save();
+            for (SimpleShape s : ssL) {
                 if (isInside(evt.getX(), evt.getY(), s.getX(), s.getY())) {
-                    System.out.println("contains");
                     toMove = s;
+                    break;
                 }
-            });
+            }
             if (toMove == null) {
                 this.selectionShape = new SelectionRectangle(evt.getX(), evt.getY());
 //            this.selectionShape .drawSelection((Graphics2D) m_panel.getGraphics(),evt.getX(), evt.getY());
@@ -358,19 +471,23 @@ public class JDrawingFrame extends JFrame
             eraseCanvas();
             redrawAll();
             selectionShape = null;
+//            save();
         }
+
         if (m_panel.contains(evt.getX(),evt.getY()) && toMove != null) {
 //            toMove.erase((Graphics2D) m_panel.getGraphics());
             toMove.setX(evt.getX());
             toMove.setY(evt.getY());
-            toMove.draw((Graphics2D) m_panel.getGraphics());
-            this.eraseCanvas();
-            this.redrawAll();
+//            toMove.draw((Graphics2D) m_panel.getGraphics());
+            eraseCanvas();
+            redrawAll();
             toMove=null;
+//            save();
         }
 
+
         //si on a initié la selection, on ajoute les shapes
-        if (this.selectionShape != null) {
+        if (this.selectionShape != null && toMove == null) {
             this.addSelectedShapes();
         }
 
@@ -403,11 +520,19 @@ public class JDrawingFrame extends JFrame
                 System.out.println("shape in selection");
             }
         });
-        System.out.println(selectedShapes.size());
+//        System.out.println(selectedShapes.size());
     }
-    public void redrawAll() {
-        this.ssL.forEach(shape -> shape.draw((Graphics2D) m_panel.getGraphics()));
+    public  void redrawAll() {
+        ssL.forEach(s -> {
+            s.draw((Graphics2D) m_panel.getGraphics());
+        });
+//        JDrawingFrame.ssL.forEach(shape -> shape.draw((Graphics2D) m_panel.getGraphics()));
+
+    }
+
+    public static void save() {
         memoryShapes.push(ssL);
+        System.out.println("saved");
     }
 
     int oldX;
@@ -440,13 +565,16 @@ public class JDrawingFrame extends JFrame
             });
                 this.eraseCanvas();
                 this.redrawAll();
+//                save();
         }
         else {
             if (toMove != null) {
                 toMove.setX(evt.getX());
                 toMove.setY(evt.getY());
-                this.eraseCanvas();
+                eraseCanvas();
                 redrawAll();
+//                save();
+//                m_panel.repaint();
             }
 
             //selection rectangle
@@ -454,14 +582,10 @@ public class JDrawingFrame extends JFrame
                 eraseCanvas();
                 redrawAll();
                 int width = evt.getX() - selectionShape.getX();
-//                System.out.println("width: " + width);
                 int height = evt.getY() - selectionShape.getY();
-//                System.out.println("height: " + height);
                 selectionShape.drawSelectionTest((Graphics2D) m_panel.getGraphics(), width, height);
             }
         }
-//        if(!selectedShapes.isEmpty()) {
-
     }
 
 
