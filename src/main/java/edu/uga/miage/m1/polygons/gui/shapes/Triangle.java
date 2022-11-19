@@ -25,10 +25,7 @@ import java.awt.Graphics2D;
 import java.awt.RenderingHints;
 import java.awt.geom.GeneralPath;
 
-import edu.uga.miage.m1.polygons.gui.persistence.JSonVisitor;
-import edu.uga.miage.m1.polygons.gui.persistence.Visitable;
-import edu.uga.miage.m1.polygons.gui.persistence.Visitor;
-import edu.uga.miage.m1.polygons.gui.persistence.XMLVisitor;
+import edu.uga.miage.m1.polygons.gui.persistence.*;
 
 /**
  * This inner class implements the triangle <tt>SimpleShape</tt> service.
@@ -90,6 +87,10 @@ public class Triangle implements SimpleShape, Visitable {
         visitor.visit(this);
     }
 
+    @Override
+    public void accept(CloneVisitor visitor) {
+        visitor.visit(this);
+    }
     @Override
     public int getX() {
         return m_x;

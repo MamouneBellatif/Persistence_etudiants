@@ -1,5 +1,6 @@
 package edu.uga.miage.m1.polygons.gui.shapes;
 
+import edu.uga.miage.m1.polygons.gui.persistence.CloneVisitor;
 import edu.uga.miage.m1.polygons.gui.persistence.JSonVisitor;
 import edu.uga.miage.m1.polygons.gui.persistence.XMLVisitor;
 
@@ -31,4 +32,6 @@ public interface SimpleShape
 
     void accept(JSonVisitor v);
     void accept(XMLVisitor v);
+
+    void accept(CloneVisitor v);
 }

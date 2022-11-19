@@ -25,10 +25,7 @@ import java.awt.Graphics2D;
 import java.awt.RenderingHints;
 import java.awt.geom.Ellipse2D;
 
-import edu.uga.miage.m1.polygons.gui.persistence.JSonVisitor;
-import edu.uga.miage.m1.polygons.gui.persistence.Visitable;
-import edu.uga.miage.m1.polygons.gui.persistence.Visitor;
-import edu.uga.miage.m1.polygons.gui.persistence.XMLVisitor;
+import edu.uga.miage.m1.polygons.gui.persistence.*;
 
 public class Circle implements SimpleShape, Visitable {
 
@@ -69,6 +66,11 @@ public class Circle implements SimpleShape, Visitable {
     }
     @Override
     public void accept(XMLVisitor visitor) {
+        visitor.visit(this);
+    }
+
+    @Override
+    public void accept(CloneVisitor visitor) {
         visitor.visit(this);
     }
     public int getX() {

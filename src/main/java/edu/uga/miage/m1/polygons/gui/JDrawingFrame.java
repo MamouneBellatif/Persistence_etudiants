@@ -123,6 +123,17 @@ public class JDrawingFrame extends JFrame
                         boolean isUndoing = true;
                     }
                 }
+                else if(e.getKeyCode() == KeyEvent.VK_Y && e.isControlDown()){
+                    System.out.println("ctrl+y");
+                    ArrayList<SimpleShape> redo = memoryShapes.redo();
+                    if(redo != null){
+                        System.out.println("redo not null");
+                        JDrawingFrame.ssL=redo;
+                        JDrawingFrame.eraseCanvas();
+                        redrawAll();
+                        boolean isUndoing = false;
+                    }
+                }
             }
 
             @Override
@@ -471,7 +482,7 @@ public class JDrawingFrame extends JFrame
             eraseCanvas();
             redrawAll();
             selectionShape = null;
-//            save();
+          save();
         }
 
         if (m_panel.contains(evt.getX(),evt.getY()) && toMove != null) {
@@ -482,7 +493,7 @@ public class JDrawingFrame extends JFrame
             eraseCanvas();
             redrawAll();
             toMove=null;
-//            save();
+           save();
         }
 
 
@@ -491,22 +502,9 @@ public class JDrawingFrame extends JFrame
             this.addSelectedShapes();
         }
 
-//        if (!selectedShapes.isEmpty()){
-//            selectedShapes.clear();
-//        }
 
-
-
-//        isTranslating= false;
     }
 
-//    public moveSelectedShapes(int x, int y) {
-//        this.selectedShapes.forEach(s -> {
-//            s.setX(x);
-//            s.setY(y);
-//            s.draw((Graphics2D) m_panel.getGraphics());
-//        });
-//    }
 
     //retourne vrai si la shape est dans la selection
     public boolean inSelection(SimpleShape shape, SelectionRectangle selection) {

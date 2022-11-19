@@ -1,4 +1,5 @@
 package edu.uga.miage.m1.polygons.gui.shapes;
+import edu.uga.miage.m1.polygons.gui.persistence.CloneVisitor;
 import edu.uga.miage.m1.polygons.gui.persistence.JSonVisitor;
 import edu.uga.miage.m1.polygons.gui.persistence.XMLVisitor;
 
@@ -58,6 +59,7 @@ public class SelectionRectangle implements SimpleShape {
         g2.draw(new Rectangle2D.Double(m_x, m_y, width, length));
     }
 
+    //On inverse les coordonnées si le rectangle est dessiné dans le sens inverse parceque les coordonnées ne oeuvent être négative
     public void drawSelectionTest(Graphics2D g2, int width, int length) {
             new_x = m_x ;
             new_y = m_y ;
@@ -117,6 +119,11 @@ public class SelectionRectangle implements SimpleShape {
         @Override
         public void accept(XMLVisitor v) {
                 //placeholder
+        }
+
+        @Override
+        public void accept(CloneVisitor v) {
+            //juste pour l'interface
         }
 
         public int getNewX(){

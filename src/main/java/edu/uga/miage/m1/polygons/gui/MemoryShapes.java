@@ -1,6 +1,10 @@
 package edu.uga.miage.m1.polygons.gui;
 
+import edu.uga.miage.m1.polygons.gui.persistence.CloneVisitor;
 import edu.uga.miage.m1.polygons.gui.shapes.SimpleShape;
+import edu.uga.miage.m1.polygons.gui.shapes.Square;
+import edu.uga.miage.m1.polygons.gui.shapes.Triangle;
+import edu.uga.miage.m1.polygons.gui.shapes.Circle;
 
 import java.util.ArrayList;
 
@@ -14,9 +18,16 @@ public class MemoryShapes {
     }
 
     public void push(ArrayList<SimpleShape> shapes) {
-        ArrayList<SimpleShape> savedList = new ArrayList<>(shapes);
+        ArrayList<SimpleShape> savedList = new ArrayList<>();
+        ArrayList<SimpleShape> finalSavedList = savedList;;
+        shapes.forEach(shape -> {
+            CloneVisitor cloneVisitor = new CloneVisitor();
+            shape.accept(new CloneVisitor());
+            finalSavedList.add(cloneVisitor.getClone());
+        });
+
 //        savedList.addAll(shapes);
-        memoryStack.add(savedList);
+        memoryStack.add(finalSavedList);
         currentIndex++;
         System.out.printf("currentIndex" + currentIndex);
     }
@@ -28,14 +39,10 @@ public class MemoryShapes {
 
     public ArrayList<SimpleShape> undo() {
         System.out.println("index: " + currentIndex);
-        //if currentIndex is outside of bounds, return null
-        if (currentIndex <= 0 || currentIndex >= memoryStack.size()) {
+        if (currentIndex < 0 || currentIndex >= memoryStack.size()) {
             return null;
         }
-//        memoryStack.get(currentIndex - 1).size();
-
         currentIndex--;
-//        System.out.println("undo size: "+memoryStack.get(currentIndex - 1));
         return memoryStack.get(currentIndex);
     }
 
@@ -43,7 +50,8 @@ public class MemoryShapes {
         if (currentIndex < 0 || currentIndex >= memoryStack.size()) {
              return null;
         }
-            return memoryStack.get(currentIndex + 1);
+        currentIndex++;
+            return memoryStack.get(currentIndex);
     }
 
 }
