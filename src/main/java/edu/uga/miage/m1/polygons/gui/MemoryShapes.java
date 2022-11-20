@@ -12,34 +12,45 @@ public class MemoryShapes {
     private ArrayList<ArrayList<SimpleShape>> memoryStack;
     private int currentIndex;
 
+    private boolean isUndoing;
     public MemoryShapes() {
         memoryStack = new ArrayList<>();
         currentIndex = -1;
+        isUndoing = false;
     }
 
     public void push(ArrayList<SimpleShape> shapes) {
-        ArrayList<SimpleShape> savedList = new ArrayList<>();
-        ArrayList<SimpleShape> finalSavedList = savedList;;
+        ArrayList<SimpleShape> finalSavedList = new ArrayList<>();
         shapes.forEach(shape -> {
             CloneVisitor cloneVisitor = new CloneVisitor();
-            shape.accept(new CloneVisitor());
+            shape.accept(cloneVisitor);
             finalSavedList.add(cloneVisitor.getClone());
         });
 
-//        savedList.addAll(shapes);
         memoryStack.add(finalSavedList);
         currentIndex++;
         System.out.printf("currentIndex" + currentIndex);
     }
 
+    public void resetStack(){
+        memoryStack = new ArrayList<>();
+        currentIndex = -1;
+    }
     public void clearStackFromCurrentIndex() {
-        memoryStack.subList(currentIndex + 1, memoryStack.size()-1).clear();
-
+        System.out.println("Clearing stack from index " + currentIndex);
+        ArrayList<SimpleShape> bufferStack = memoryStack.get(memoryStack.size()-1);
+        if (currentIndex >= 0) {
+            memoryStack.subList(currentIndex, memoryStack.size()).clear();
+            memoryStack.trimToSize();
+            memoryStack.add(bufferStack);
+//            currentIndex=memoryStack.size()-1;
+            currentIndex=memoryStack.size()-1;
+        }
     }
 
     public ArrayList<SimpleShape> undo() {
         System.out.println("index: " + currentIndex);
-        if (currentIndex < 0 || currentIndex >= memoryStack.size()) {
+        if (currentIndex <= 0 || currentIndex >= memoryStack.size()) {
             return null;
         }
         currentIndex--;
@@ -47,12 +58,21 @@ public class MemoryShapes {
     }
 
     public ArrayList<SimpleShape> redo() {
+        if(currentIndex==memoryStack.size()-1){
+            return null;
+        }
+        currentIndex++;
         if (currentIndex < 0 || currentIndex >= memoryStack.size()) {
              return null;
         }
-        currentIndex++;
             return memoryStack.get(currentIndex);
     }
 
+    public boolean isUndoing(){
+        return isUndoing;
+    }
+    public void setUndoing(boolean b){
+        this.isUndoing = b;
+    }
 }
 
