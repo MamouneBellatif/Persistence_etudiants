@@ -1,0 +1,47 @@
+{
+    "$schema": "https://json-schema.org/draft-04/schema#",
+    "definitions": {
+        "shapeType": {
+            "type": "object",
+            "required": [
+                "type",
+                "x",
+                "y"
+            ],
+            "additionalProperties": false,
+            "properties": {
+                "type": {
+                    "type": "string",
+                    "enum": [
+                        "square",
+                        "triangle",
+                        "rectangle"
+                    ]
+                },
+                "x": {"type": "integer"},
+                "y": {"type": "integer"}
+            }
+        },
+        "shapesType": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+                "shape": {
+                    "type": "array",
+                    "additionalItems": false,
+                    "items": {"$ref": "#/definitions/shapeType"},
+                    "minItems": 0
+                }
+            }
+        }
+    },
+    "anyOf": [
+        {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+                "shapes": {"$ref": "#/definitions/shapesType"}
+            }
+        }
+    ]
+}
