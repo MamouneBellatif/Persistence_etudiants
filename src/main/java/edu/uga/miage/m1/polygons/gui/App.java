@@ -4,9 +4,10 @@ import edu.uga.miage.m1.polygons.gui.persistence.JSonVisitor;
 import edu.uga.miage.m1.polygons.gui.persistence.XMLVisitor;
 
 import javax.json.*;
+import java.awt.*;
 import java.io.*;
 
-import java.util.ArrayList;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.LogRecord;
 import java.util.logging.Logger;
@@ -73,14 +74,14 @@ public static void xmlToFile(String xml) throws ParserConfigurationException, IO
             // force la bonne extension
             path = FilenameUtils.removeExtension(path) + ".xml";
                 try (PrintWriter out = new PrintWriter(new FileWriter(path))) {
-                    out.write(xml.toString());
+                    out.write(xml);
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
             }
 
 
-    public static void shapeJsonBuilder(ArrayList<JSonVisitor> arrayList) {
+    public static void shapeJsonBuilder(List<JSonVisitor> arrayList) {
         StringBuilder jsonString = new StringBuilder("{ \"shapes\":[");
         for (JSonVisitor jv: arrayList){
             jsonString.append(jv.getRepresentation());
@@ -92,7 +93,7 @@ public static void xmlToFile(String xml) throws ParserConfigurationException, IO
         App.jsonToFile(jsonString.toString());
     }
 
-    public static String xmlBuilder(ArrayList<XMLVisitor> arrayList) throws ParserConfigurationException, IOException, TransformerException, SAXException {
+    public static void xmlBuilder(List<XMLVisitor> arrayList) throws ParserConfigurationException, IOException, TransformerException, SAXException {
         StringBuilder xmlStringBuilder = new StringBuilder("<shapes>");
         for (XMLVisitor jv: arrayList){
             xmlStringBuilder.append(jv.getRepresentation());
@@ -101,7 +102,6 @@ public static void xmlToFile(String xml) throws ParserConfigurationException, IO
         App.xmlToFile(xmlStringBuilder.toString());
         //format the xml string to make it more readable
 
-        return xmlStringBuilder.toString();
     }
 
     public static JsonObject importJSON() throws FileNotFoundException {
@@ -112,12 +112,8 @@ public static void xmlToFile(String xml) throws ParserConfigurationException, IO
         return json;
     }
 
-    public static void main( String[] args ) throws InterruptedException, FileNotFoundException {
-        SwingUtilities.invokeLater(new Runnable() {
-            public void run() {
-                GUIHelper.showOnFrame("test");
-            }
-        });
+    public static void main( String[] args ){
+        EventQueue.invokeLater(() -> GUIHelper.showOnFrame("test"));
 
     }
 
@@ -126,7 +122,6 @@ public static void xmlToFile(String xml) throws ParserConfigurationException, IO
         /**
          * Prettifier pour string de json
          * source : <a href="https://stackoverflow.com/questions/4105795/pretty-print-json-in-java">...</a>
-         * @param jsonString
          * @return String
          */
         public static String jsonPrettify(String jsonString) {

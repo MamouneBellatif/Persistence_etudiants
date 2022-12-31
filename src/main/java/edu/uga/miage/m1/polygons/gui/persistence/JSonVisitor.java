@@ -1,33 +1,33 @@
 package edu.uga.miage.m1.polygons.gui.persistence;
 
-import edu.uga.miage.m1.polygons.gui.shapes.Circle;
-import edu.uga.miage.m1.polygons.gui.shapes.SimpleShape;
-import edu.uga.miage.m1.polygons.gui.shapes.Square;
-import edu.uga.miage.m1.polygons.gui.shapes.Triangle;
+import edu.uga.miage.m1.polygons.gui.shapes.*;
 
 /**
  * @author <a href="mailto:christophe.saint-marcel@univ-grenoble-alpes.fr">Christophe</a>
  */
 public class JSonVisitor implements Visitor {
 
+    public static final String Y_JSON = ", \"y\": ";
     private String representation = null;
 
-    public JSonVisitor() {
-    }
 
     @Override
     public void visit(Circle circle) {
-        this.representation = "  { \"type\": \"circle\", \"x\": " + circle.getX() + ", \"y\": " + circle.getY() + " }";
+        this.representation = "  { \"type\": \"circle\", \"x\": " + circle.getX() + Y_JSON + circle.getY() + " }";
     }
 
     @Override
     public void visit(Square square) {
-        this.representation = " { \"type\": \"square\", \"x\": " + square.getX() + ", \"y\": " + square.getY() + " }";
+        this.representation = " { \"type\": \"square\", \"x\": " + square.getX() + Y_JSON + square.getY() + " }";
     }
 
     @Override
     public void visit(Triangle triangle) {
-        this.representation = " {\"type\": \"triangle\", \"x\": " + triangle.getX() + ", \"y\": " + triangle.getY() + " }";
+        this.representation = " {\"type\": \"triangle\", \"x\": " + triangle.getX() + Y_JSON + triangle.getY() + " }";
+    }
+    @Override
+    public void visit(Chami chami) {
+        this.representation = " {\"type\": \"chami\", \"x\": " + chami.getX() + Y_JSON + chami.getY() + " }";
     }
 
     /**

@@ -1,10 +1,7 @@
 package edu.uga.miage.m1.polygons.gui.persistence;
 
 import edu.uga.miage.m1.polygons.gui.factory.SimpleShapeFactory;
-import edu.uga.miage.m1.polygons.gui.shapes.Circle;
-import edu.uga.miage.m1.polygons.gui.shapes.SimpleShape;
-import edu.uga.miage.m1.polygons.gui.shapes.Square;
-import edu.uga.miage.m1.polygons.gui.shapes.Triangle;
+import edu.uga.miage.m1.polygons.gui.shapes.*;
 
 //Nous servira pour l'undo
 public class CloneVisitor implements Visitor {
@@ -30,6 +27,10 @@ public class CloneVisitor implements Visitor {
         this.clone = SimpleShapeFactory.createSimpleShape("TRIANGLE", triangle.getX(), triangle.getY());
     }
 
+    @Override
+    public void visit(Chami chami) {
+        this.clone = SimpleShapeFactory.createSimpleShape("CHAMI", chami.getX(), chami.getY());
+    }
 
     /**
      * @return the clone
