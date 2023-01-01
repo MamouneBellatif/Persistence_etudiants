@@ -25,18 +25,22 @@ import java.awt.Graphics2D;
 import java.awt.RenderingHints;
 import java.awt.geom.Ellipse2D;
 
+
 import edu.uga.miage.m1.polygons.gui.persistence.*;
+
 
 public class Circle implements SimpleShape, Visitable {
 
-    int m_x;
+    int mX;
 
-    int m_y;
+    int mY;
+
 
     public Circle(int x, int y) {
-        m_x = x;
-        m_y = y;
+        mX = x;
+        mY = y;
     }
+
 
     /**
      * Implements the <tt>SimpleShape.draw()</tt> method for painting
@@ -44,18 +48,21 @@ public class Circle implements SimpleShape, Visitable {
      * @param g2 The graphics object used for painting.
      */
     public void draw(Graphics2D g2) {
-        int m_x = this.m_x-25;
-        int m_y = this.m_y-25;
+        int drawX = this.mX -25;
+        int drawY = this.mY -25;
         g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-        GradientPaint gradient = new GradientPaint(m_x, m_y, Color.RED, m_x + 50, m_y, Color.WHITE);
+        GradientPaint gradient = new GradientPaint(drawX, drawY, Color.RED, drawX + 50f, drawY, Color.WHITE);
         g2.setPaint(gradient);
-        g2.fill(new Ellipse2D.Double(m_x, m_y, 50, 50));
+        g2.fill(new Ellipse2D.Double(drawX, drawY, 50, 50));
         BasicStroke wideStroke = new BasicStroke(2.0f);
         g2.setColor(Color.black);
         g2.setStroke(wideStroke);
-        g2.draw(new Ellipse2D.Double(m_x, m_y, 50, 50));
+        g2.draw(new Ellipse2D.Double(drawX, drawY, 50, 50));
     }
 
+    /**
+     * @param
+     */
     @Override
     public void accept(Visitor visitor) {
         visitor.visit(this);
@@ -73,18 +80,21 @@ public class Circle implements SimpleShape, Visitable {
     public void accept(CloneVisitor visitor) {
         visitor.visit(this);
     }
+
+
+
     public int getX() {
-        return m_x;
+        return mX;
     }
     public int getY() {
-        return m_y;
+        return mY;
     }
     // x and y setter
     public void setX(int x) {
-        m_x = x;
+        mX = x;
     }
     public void setY(int y) {
-        m_y = y;
+        mY = y;
     }
 
 

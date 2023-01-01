@@ -1,15 +1,13 @@
 package edu.uga.miage.m1.polygons.gui;
 
 import edu.uga.miage.m1.polygons.gui.persistence.CloneVisitor;
-import edu.uga.miage.m1.polygons.gui.shapes.SimpleShape;
-import edu.uga.miage.m1.polygons.gui.shapes.Square;
-import edu.uga.miage.m1.polygons.gui.shapes.Triangle;
-import edu.uga.miage.m1.polygons.gui.shapes.Circle;
+import edu.uga.miage.m1.polygons.gui.shapes.*;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class MemoryShapes {
-    private ArrayList<ArrayList<SimpleShape>> memoryStack;
+    private ArrayList<List<ShapeWrapper>> memoryStack;
     private int currentIndex;
 
     private boolean isUndoing;
@@ -19,53 +17,50 @@ public class MemoryShapes {
         isUndoing = false;
     }
 
-    public void push(ArrayList<SimpleShape> shapes) {
-        ArrayList<SimpleShape> finalSavedList = new ArrayList<>();
+    public void push(List<ShapeWrapper> shapes) {
+        ArrayList<ShapeWrapper> finalSavedList = new ArrayList<>();
         shapes.forEach(shape -> {
-            CloneVisitor cloneVisitor = new CloneVisitor();
-            shape.accept(cloneVisitor);
-            finalSavedList.add(cloneVisitor.getClone());
+            finalSavedList.add(shape.duplicate());
         });
-
         memoryStack.add(finalSavedList);
         currentIndex++;
-        System.out.printf("currentIndex" + currentIndex);
+
     }
 
-    public void resetStack(){
-        memoryStack = new ArrayList<>();
-        currentIndex = -1;
-    }
+
     public void clearStackFromCurrentIndex() {
-        System.out.println("Clearing stack from index " + currentIndex);
-        ArrayList<SimpleShape> bufferStack = memoryStack.get(memoryStack.size()-1);
+        System.out.println("clear");
         if (currentIndex >= 0) {
-            memoryStack.subList(currentIndex, memoryStack.size()).clear();
+//            List<ShapeWrapper> bufferStack = memoryStack.get(memoryStack.size()-1);
+            memoryStack.subList(currentIndex, memoryStack.size()-1).clear();
             memoryStack.trimToSize();
-            memoryStack.add(bufferStack);
-//            currentIndex=memoryStack.size()-1;
+//            memoryStack.add(bufferStack);
             currentIndex=memoryStack.size()-1;
         }
     }
 
-    public ArrayList<SimpleShape> undo() {
-        System.out.println("index: " + currentIndex);
-        if (currentIndex <= 0 || currentIndex >= memoryStack.size()) {
+    public List<ShapeWrapper> undo() {
+        currentIndex--;
+        if (currentIndex <= -1 || currentIndex >= memoryStack.size()) {
+            currentIndex++;
             return null;
         }
-        currentIndex--;
+
+        setUndoing(true);
         return memoryStack.get(currentIndex);
     }
 
-    public ArrayList<SimpleShape> redo() {
+    public List<ShapeWrapper> redo() {
         if(currentIndex==memoryStack.size()-1){
             return null;
         }
         currentIndex++;
         if (currentIndex < 0 || currentIndex >= memoryStack.size()) {
+            currentIndex--;
              return null;
         }
-            return memoryStack.get(currentIndex);
+
+        return memoryStack.get(currentIndex);
     }
 
     public boolean isUndoing(){

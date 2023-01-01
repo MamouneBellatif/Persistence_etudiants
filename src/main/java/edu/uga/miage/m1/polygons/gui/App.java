@@ -14,6 +14,7 @@ import java.util.logging.Logger;
 import javax.json.JsonObject;
 import javax.json.JsonReader;
 import javax.swing.*;
+import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.xml.XMLConstants;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -28,6 +29,7 @@ import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import com.google.gson.*;
 import javax.swing.filechooser.FileFilter;
+
 
 
 /**
@@ -59,9 +61,7 @@ public class App
     }
 
 public static void xmlToFile(String xml) throws ParserConfigurationException, IOException, TransformerException, SAXException {
-
-        xml = PrettyUtils.xmlStringPrettify(xml);
-
+            String xmlStr  = PrettyUtils.xmlStringPrettify(xml);
             JFileChooser chooser = new JFileChooser();
             String path = null;
             chooser.setDialogTitle("Sauvegarde xml");
@@ -74,13 +74,17 @@ public static void xmlToFile(String xml) throws ParserConfigurationException, IO
             // force la bonne extension
             path = FilenameUtils.removeExtension(path) + ".xml";
                 try (PrintWriter out = new PrintWriter(new FileWriter(path))) {
-                    out.write(xml);
+                    out.write(xmlStr);
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
             }
 
 
+    /**
+     * Construit un string du JSON pour l'export
+     * @param arrayList Liste de JSONVisitor
+     */
     public static void shapeJsonBuilder(List<JSonVisitor> arrayList) {
         StringBuilder jsonString = new StringBuilder("{ \"shapes\":[");
         for (JSonVisitor jv: arrayList){
@@ -93,6 +97,14 @@ public static void xmlToFile(String xml) throws ParserConfigurationException, IO
         App.jsonToFile(jsonString.toString());
     }
 
+    /**
+     * Construit un string du JSON pour l'export
+     * @param arrayList Liste de XMLVisitor
+     * @throws ParserConfigurationException
+     * @throws IOException
+     * @throws TransformerException
+     * @throws SAXException
+     */
     public static void xmlBuilder(List<XMLVisitor> arrayList) throws ParserConfigurationException, IOException, TransformerException, SAXException {
         StringBuilder xmlStringBuilder = new StringBuilder("<shapes>");
         for (XMLVisitor jv: arrayList){
@@ -100,21 +112,70 @@ public static void xmlToFile(String xml) throws ParserConfigurationException, IO
         }
         xmlStringBuilder.append("</shapes>");
         App.xmlToFile(xmlStringBuilder.toString());
-        //format the xml string to make it more readable
+    }
+    public enum FileFormat {
+        JSON, XML
+    }
+    private static JsonObject jsonObject = null;
+    private static Document xmlDoc = null;
+    public static JsonObject getJsonObject() {
+        return jsonObject;
+    }
+    public static Document getXmlDoc() {
+        return xmlDoc;
+    }
+    public static FileFormat importDispatcher() {
+        //choose either as json or xml file
+        JFileChooser chooser = new JFileChooser();
+        chooser.setDialogTitle("Importer un fichier");
+        chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
+        chooser.setAcceptAllFileFilterUsed(false);
+        chooser.setFileFilter(new FileNameExtensionFilter("Xml et json acceptés","xml","json"));
+        if (chooser.showOpenDialog(null) == JFileChooser.APPROVE_OPTION) {
+            String path = chooser.getSelectedFile().getAbsolutePath();
+            String extension = FilenameUtils.getExtension(path);
+            if (extension.equals("xml")) {
+                try {
+                    xmlDoc =importXml(path);
+                    return FileFormat.XML;
+                } catch (ParserConfigurationException | IOException | SAXException e) {
+                    e.printStackTrace();
+                }
+            } else if (extension.equals("json")) {
+                try {
+                    App.jsonObject = importJSON(path);
+                    return FileFormat.JSON;
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
 
+        }
+        return null;
     }
 
-    public static JsonObject importJSON() throws FileNotFoundException {
-        InputStream inputStream = new FileInputStream("export.json");
-        JsonReader reader = Json.createReader(inputStream);
-        JsonObject json = reader.readObject();
-        reader.close();
-        return json;
+    public static JsonObject importJSON(String path) throws FileNotFoundException, MyRuntimeException {
+        //choose a file to import
+            JsonReader reader = Json.createReader(new FileReader(path));
+            JsonObject jsonObject = reader.readObject();
+            reader.close();
+            return jsonObject;
+    }
+
+
+
+    public static Document importXml(String path) throws ParserConfigurationException, IOException, SAXException {
+        File inputFile = new File(path);
+        DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
+        dbFactory.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
+        DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
+        Document doc = dBuilder.parse(inputFile);
+        doc.getDocumentElement().normalize();
+        return doc;
     }
 
     public static void main( String[] args ){
-        EventQueue.invokeLater(() -> GUIHelper.showOnFrame("test"));
-
+        GUIHelper.showOnFrame("test");
     }
 
     private static class PrettyUtils {

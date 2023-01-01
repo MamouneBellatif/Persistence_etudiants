@@ -24,8 +24,12 @@ import java.awt.GradientPaint;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
 import java.awt.geom.GeneralPath;
+import java.awt.geom.Path2D;
 
+import edu.uga.miage.m1.polygons.gui.JDrawingFrame;
 import edu.uga.miage.m1.polygons.gui.persistence.*;
+
+import javax.swing.*;
 
 /**
  * This inner class implements the triangle <tt>SimpleShape</tt> service.
@@ -33,7 +37,7 @@ import edu.uga.miage.m1.polygons.gui.persistence.*;
  *
  * @author <a href="mailto:christophe.saint-marcel@univ-grenoble-alpes.fr">Christophe</a>
  */
-public class Triangle implements SimpleShape, Visitable {
+public class Triangle  extends JLabel implements SimpleShape, Visitable {
 
     int m_x;
 
@@ -50,15 +54,15 @@ public class Triangle implements SimpleShape, Visitable {
      * @param g2 The graphics object used for painting.
      */
     public void draw(Graphics2D g2) {
-        int m_x = this.m_x-25;
-        int m_y = this.m_y-25;
+        int mX = this.m_x-25;
+        int mY = this.m_y-25;
         g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-        GradientPaint gradient = new GradientPaint(m_x, m_y, Color.GREEN, m_x + 50, m_y, Color.WHITE);
+        GradientPaint gradient = new GradientPaint(mX, mY, Color.GREEN, mX + 50, mY, Color.WHITE);
         g2.setPaint(gradient);
-        int[] xcoords = { m_x + 25, m_x, m_x + 50 };
-        int[] ycoords = { m_y, m_y + 50, m_y + 50 };
-        GeneralPath polygon = new GeneralPath(GeneralPath.WIND_EVEN_ODD, xcoords.length);
-        polygon.moveTo(m_x + 25, m_y);
+        int[] xcoords = { mX + 25, mX, mX + 50 };
+        int[] ycoords = { mY, mY + 50, mY + 50 };
+        GeneralPath polygon = new GeneralPath(Path2D.WIND_EVEN_ODD, xcoords.length);
+        polygon.moveTo(mX + 25, mY);
         for (int i = 0; i < xcoords.length; i++) {
             polygon.lineTo(xcoords[i], ycoords[i]);
         }
@@ -91,6 +95,9 @@ public class Triangle implements SimpleShape, Visitable {
     public void accept(CloneVisitor visitor) {
         visitor.visit(this);
     }
+
+
+
     @Override
     public int getX() {
         return m_x;

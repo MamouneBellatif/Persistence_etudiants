@@ -29,6 +29,10 @@ public class JSonVisitor implements Visitor {
     public void visit(Chami chami) {
         this.representation = " {\"type\": \"chami\", \"x\": " + chami.getX() + Y_JSON + chami.getY() + " }";
     }
+    @Override
+    public void visit(MyGrumpy grumpy) {
+        this.representation = " {\"type\": \"grumpy\", \"x\": " + grumpy.getX() + Y_JSON + grumpy.getY() + " }";
+    }
 
     /**
      * @return the representation in JSon example for a Circle

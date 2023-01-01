@@ -1,10 +1,15 @@
 package edu.uga.miage.m1.polygons.gui.shapes;
 
+import edu.uga.miage.m1.polygons.gui.JDrawingFrame;
 import edu.uga.miage.m1.polygons.gui.persistence.CloneVisitor;
 import edu.uga.miage.m1.polygons.gui.persistence.JSonVisitor;
 import edu.uga.miage.m1.polygons.gui.persistence.XMLVisitor;
 
 import java.awt.Graphics2D;
+
+import edu.uga.miage.m1.polygons.gui.ShapesLib.ShapesJLabel.ShapeJLabel;
+
+import javax.swing.*;
 
 /**
  * This interface defines the <tt>SimpleShape</tt> extension. This extension
@@ -21,7 +26,7 @@ public interface SimpleShape
      * @param g2 The graphics object used for painting.
      **/
     void draw(Graphics2D g2);
-    
+
     int getX();
     
     int getY();
@@ -34,4 +39,6 @@ public interface SimpleShape
     void accept(XMLVisitor v);
 
     void accept(CloneVisitor v);
+
+
 }
