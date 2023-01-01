@@ -4,7 +4,6 @@ import edu.uga.miage.m1.polygons.gui.persistence.JSonVisitor;
 import edu.uga.miage.m1.polygons.gui.persistence.XMLVisitor;
 
 import javax.json.*;
-import java.awt.*;
 import java.io.*;
 
 import java.util.List;
@@ -167,6 +166,7 @@ public static void xmlToFile(String xml) throws ParserConfigurationException, IO
     public static Document importXml(String path) throws ParserConfigurationException, IOException, SAXException {
         File inputFile = new File(path);
         DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
+        dbFactory.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
         DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
         Document doc = dBuilder.parse(inputFile);
         doc.getDocumentElement().normalize();
@@ -174,8 +174,7 @@ public static void xmlToFile(String xml) throws ParserConfigurationException, IO
     }
 
     public static void main( String[] args ){
-        EventQueue.invokeLater(() -> GUIHelper.showOnFrame("test"));
-
+        GUIHelper.showOnFrame("test");
     }
 
     private static class PrettyUtils {

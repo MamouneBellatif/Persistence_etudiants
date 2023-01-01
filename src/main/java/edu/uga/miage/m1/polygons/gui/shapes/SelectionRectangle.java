@@ -45,22 +45,11 @@ public class SelectionRectangle implements SimpleShape {
             g2.draw(new Rectangle2D.Double(m_x, m_y, 50, 50));
         }
 
-        //redraw the rectangle when the mouse is dragged
-    public void drawSelection(Graphics2D g2, int width, int length) {
 
-        Color color = new Color(206,234,255,127);
-        g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-        GradientPaint gradient = new GradientPaint(m_x, m_y, color, m_x , m_y, color);
-        g2.setPaint(gradient);
-        g2.fill(new Rectangle2D.Double(m_x, m_y, width, length));
-        g2.setColor(new Color(206,234,255,127));
-        BasicStroke wideStroke = new BasicStroke(2.0f);
-        g2.setStroke(wideStroke);
-        g2.draw(new Rectangle2D.Double(m_x, m_y, width, length));
-    }
+
 
     //On inverse les coordonnées si le rectangle est dessiné dans le sens inverse parceque les coordonnées ne oeuvent être négative
-    public void drawSelectionTest(Graphics2D g2, int width, int length) {
+    public void drawSelection(Graphics2D g2, int width, int length) {
             new_x = m_x ;
             new_y = m_y ;
             if(width<0){
@@ -126,7 +115,9 @@ public class SelectionRectangle implements SimpleShape {
             //juste pour l'interface
         }
 
-        public int getNewX(){
+
+
+    public int getNewX(){
             return new_x;
         }
 

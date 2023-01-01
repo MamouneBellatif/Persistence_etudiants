@@ -1,0 +1,29 @@
+{
+  "shapes": [
+    {
+      "type": "square",
+      "x": 344,
+      "y": 205
+    },
+    {
+      "type": "square",
+      "x": 125,
+      "y": 196
+    },
+    {
+      "type": "square",
+      "x": 276,
+      "y": 274
+    },
+    {
+      "type": "triangle",
+      "x": 317,
+      "y": 276
+    },
+    {
+      "type": "circle",
+      "x": 255,
+      "y": 87
+    }
+  ]
+}

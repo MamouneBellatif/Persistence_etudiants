@@ -1,0 +1,37 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "type": "object",
+  "properties": {
+    "shapes": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "enum": [
+              "triangle",
+              "circle",
+              "rectangle"
+            ]
+          },
+          "x": {
+            "type": "integer"
+          },
+          "y": {
+            "type": "integer"
+          }
+        },
+        "required": [
+          "type",
+          "x",
+          "y"
+        ]
+      }
+    }
+  },
+  "required": [
+    "shapes"
+  ]
+}
+

@@ -32,6 +32,12 @@ public class CloneVisitor implements Visitor {
         this.clone = SimpleShapeFactory.createSimpleShape("CHAMI", chami.getX(), chami.getY());
     }
 
+
+    public void visit(MyGrumpy grumpy) {
+        this.clone = SimpleShapeFactory.createSimpleShape("GRUMPY", grumpy.getX(), grumpy.getY());
+    }
+
+
     /**
      * @return the clone
      */

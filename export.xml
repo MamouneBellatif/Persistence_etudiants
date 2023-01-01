@@ -1,1 +1,23 @@
-<shapes><shape><type>square</type><x>108</x><y>108</y></shape><shape><type>square</type><x>196</x><y>196</y></shape><shape><type>square</type><x>246</x><y>246</y></shape><shape><type>square</type><x>246</x><y>246</y></shape></shapes>
+<?xml version="1.0" encoding="UTF-8"?>
+<shapes>
+    <shape>
+        <type>square</type>
+        <x>108</x>
+        <y>108</y>
+    </shape>
+    <shape>
+        <type>triangle</type>
+        <x>196</x>
+        <y>196</y>
+    </shape>
+    <shape>
+        <type>rectangle</type>
+        <x>246</x>
+        <y>246</y>
+    </shape>
+    <shape>
+        <type>square</type>
+        <x>246</x>
+        <y>246</y>
+    </shape>
+</shapes>

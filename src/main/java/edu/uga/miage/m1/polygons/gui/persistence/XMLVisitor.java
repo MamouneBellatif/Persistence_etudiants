@@ -35,6 +35,11 @@ public class XMLVisitor implements Visitor {
         this.representation = "<shape><type>chami</type><x>"+chami.getX()+ X_Y +chami.getY()+Y_SHAPE;
     }
 
+    @Override
+    public void visit(MyGrumpy grumpy) {
+        this.representation = "<shape><type>grumpy</type><x>"+grumpy.getX()+ X_Y +grumpy.getY()+Y_SHAPE;
+    }
+
     /**
      * @return the representation in JSon example for a Triangle:
      *

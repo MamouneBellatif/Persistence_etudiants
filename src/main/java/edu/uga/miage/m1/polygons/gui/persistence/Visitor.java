@@ -1,9 +1,6 @@
 package edu.uga.miage.m1.polygons.gui.persistence;
 
-import edu.uga.miage.m1.polygons.gui.shapes.Chami;
-import edu.uga.miage.m1.polygons.gui.shapes.Circle;
-import edu.uga.miage.m1.polygons.gui.shapes.Square;
-import edu.uga.miage.m1.polygons.gui.shapes.Triangle;
+import edu.uga.miage.m1.polygons.gui.shapes.*;
 
 /**
  * You must define a method for each type of Visitable.
@@ -15,4 +12,5 @@ public interface Visitor {
 	 void visit(Square square);
 	 void visit(Triangle triangle);
 	 void visit(Chami chami);
+	void visit(MyGrumpy grumpy);
 }
