@@ -28,9 +28,9 @@ public class KeyListenerImpl implements KeyListener {
             for (ShapeWrapper shapeWrapper : newList) {
                 list.add(shapeWrapper.duplicate());
             }
-            JDrawingFrame.setList(list);
+            frame.eraseCanva();
+            frame.setList(list);
             frame.repaint();
-            JDrawingFrame.getMemoryShapes().setUndoing(true);
         }
     }
 

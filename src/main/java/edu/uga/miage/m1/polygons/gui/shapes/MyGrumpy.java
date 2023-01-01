@@ -14,8 +14,6 @@ public class MyGrumpy extends Grumpy implements SimpleShape, Visitable {
     }
 
 
-
-
     /**
      * @param v
      */

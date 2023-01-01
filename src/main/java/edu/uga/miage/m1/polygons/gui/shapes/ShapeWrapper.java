@@ -97,6 +97,9 @@ public class ShapeWrapper  {
         return type;
     }
 
-
+    //to String
+    public String toString(){
+        return "shape "+type.toString();
+    }
 
 }

@@ -36,9 +36,8 @@ import javax.xml.transform.TransformerException;
 
 
 import edu.uga.miage.m1.polygons.gui.factory.SimpleShapeFactory;
-import edu.uga.miage.m1.polygons.gui.persistence.JSonVisitor;
-import edu.uga.miage.m1.polygons.gui.persistence.KeyListenerImpl;
-import edu.uga.miage.m1.polygons.gui.persistence.XMLVisitor;
+import edu.uga.miage.m1.polygons.gui.persistence.*;
+import edu.uga.miage.m1.polygons.gui.persistence.UndoListener;
 import edu.uga.miage.m1.polygons.gui.shapes.*;
 import edu.uga.miage.m1.polygons.gui.shapes.SimpleShape;
 import org.w3c.dom.Element;
@@ -68,8 +67,7 @@ public class JDrawingFrame extends JFrame
      */
     transient ArrayList<ShapeWrapper> selectedShapes;
 
-    public enum Shapes { GRUMPY, SQUARE, TRIANGLE, CIRCLE, CHAMI, EXPORT, IMPORT}
-
+    public enum Shapes { GRUMPY, SQUARE, TRIANGLE, CIRCLE, CHAMI, EXPORT, IMPORT, UNDO, REDO }
     @Serial
     private static final long serialVersionUID = 1L;
     private final JToolBar jToolBar;
@@ -78,7 +76,7 @@ public class JDrawingFrame extends JFrame
     private JLabel jLabel;
     private transient final ActionListener mReusableActionListener = new ShapeActionListener();
 
-
+    private transient UndoListener undoListener;
     transient KeyListener kl = new KeyListenerImpl(this);
 
     /**
@@ -117,20 +115,63 @@ public class JDrawingFrame extends JFrame
         addShape(Shapes.GRUMPY, new ImageIcon(Objects.requireNonNull(getClass().getResource("images/grumpy.jpg"))));
         addExportButton();
         addImportButton();
+         undoListener = new UndoListener(this);
+        addUndoButton();
+        addRedoButton();
         setPreferredSize(new Dimension(600, 400));
 
         selectedShapes = new ArrayList<>();
-        save();
+
 
     }
 
+    //add undo button
+    private void addUndoButton() {
+        JButton btn = new JButton();
+        btn.setText("Annuler");
+        m_buttons.put(Shapes.IMPORT,btn);
+        btn.setActionCommand("UNDO");
+        btn.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                undoListener.makeCopy(true);
+            }
+        });
+        jToolBar.add(btn);
+        jToolBar.validate();
+        repaint();
+    }
+
+    private void addRedoButton() {
+        JButton btn = new JButton();
+        btn.setText("Refaire");
+        m_buttons.put(Shapes.IMPORT,btn);
+        btn.setActionCommand("REDO");
+        btn.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                undoListener.makeCopy(false);
+            }
+        });
+        jToolBar.add(btn);
+        jToolBar.validate();
+        repaint();
+    }
     public static MemoryShapes getMemoryShapes() {
         return memoryShapes;
     }
 
-    public static void setList(List<ShapeWrapper> list){
+    public void setList(List<ShapeWrapper> list){
+        for (int i = 0; i < jShapeList.size(); i++) {
+            jShapeList.get(i).erase(m_panel);
+        }
+        repaint();
+        jShapeList.clear();
         jShapeList = list;
+        jShapeList.forEach(s -> s.draw(m_panel));
+        m_panel.repaint();
     }
+
 
     public void redrawAll() {
         repaint();
@@ -167,7 +208,7 @@ public class JDrawingFrame extends JFrame
     public void addImportedXMLShapes(){
         eraseCanva();
         NodeList nodeList = App.getXmlDoc().getElementsByTagName("shape");
-        System.out.println(nodeList.getLength());
+
         for (int i = 0; i < nodeList.getLength(); i++) {
             Node node = nodeList.item(i);
             if (node.getNodeType() == Node.ELEMENT_NODE) {
@@ -215,14 +256,17 @@ public class JDrawingFrame extends JFrame
         btn.addActionListener(e -> {
             try {
                 App.FileFormat importedFormat = App.importDispatcher();
-                assert importedFormat != null;
+                if (importedFormat == null) {
+                    return;
+                }
                 if (importedFormat.equals(App.FileFormat.JSON)) {
                     addImportedJSONShapes();
                 } else if (importedFormat.equals(App.FileFormat.XML)) {
                     addImportedXMLShapes();
                 }
+
             } catch (FileNotFoundException ex) {
-                throw new App.MyRuntimeException(ex.toString());
+                throw new App.MyRuntimeException("Aucun fichier importé");
             }
         });
 
@@ -267,6 +311,7 @@ public class JDrawingFrame extends JFrame
         jToolBar.add(button);
         jToolBar.validate();
         repaint();
+        save();
     }
 
 
@@ -415,6 +460,10 @@ public class JDrawingFrame extends JFrame
             initialJPoint = evt.getPoint();
             shapeToMove = null;
             repaint();
+            if (memoryShapes.isUndoing()) {
+                memoryShapes.clearStackFromCurrentIndex();
+                memoryShapes.setUndoing(false);
+            }
             save();
             return;
         }
@@ -423,6 +472,7 @@ public class JDrawingFrame extends JFrame
             isTranslating = false;
             selectedShapes.clear();
             selectionShape = null;
+            save();
         }
         repaint();
 
@@ -440,7 +490,6 @@ public class JDrawingFrame extends JFrame
         }
 
 
-        save();
     }
 
     //retourne vrai si la shape est dans la selection

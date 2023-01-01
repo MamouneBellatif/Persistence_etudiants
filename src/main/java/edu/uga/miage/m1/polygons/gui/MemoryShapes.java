@@ -7,7 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class MemoryShapes {
-    private ArrayList<ArrayList<ShapeWrapper>> memoryStack;
+    private ArrayList<List<ShapeWrapper>> memoryStack;
     private int currentIndex;
 
     private boolean isUndoing;
@@ -24,31 +24,29 @@ public class MemoryShapes {
         });
         memoryStack.add(finalSavedList);
         currentIndex++;
+
     }
 
 
-    public void resetStack(){
-        memoryStack = new ArrayList<>();
-        currentIndex = -1;
-    }
     public void clearStackFromCurrentIndex() {
-        System.out.println("Clearing stack from index " + currentIndex);
+        System.out.println("clear");
         if (currentIndex >= 0) {
-            ArrayList<ShapeWrapper> bufferStack = memoryStack.get(memoryStack.size()-1);
-            memoryStack.subList(currentIndex, memoryStack.size()).clear();
+//            List<ShapeWrapper> bufferStack = memoryStack.get(memoryStack.size()-1);
+            memoryStack.subList(currentIndex, memoryStack.size()-1).clear();
             memoryStack.trimToSize();
-            memoryStack.add(bufferStack);
+//            memoryStack.add(bufferStack);
             currentIndex=memoryStack.size()-1;
         }
     }
 
     public List<ShapeWrapper> undo() {
         currentIndex--;
-        if (currentIndex <= 0 || currentIndex >= memoryStack.size()) {
+        if (currentIndex <= -1 || currentIndex >= memoryStack.size()) {
             currentIndex++;
             return null;
         }
-        System.out.println("undo index: " + currentIndex);
+
+        setUndoing(true);
         return memoryStack.get(currentIndex);
     }
 
@@ -61,7 +59,7 @@ public class MemoryShapes {
             currentIndex--;
              return null;
         }
-        System.out.println("redo index: " + currentIndex);
+
         return memoryStack.get(currentIndex);
     }
 
