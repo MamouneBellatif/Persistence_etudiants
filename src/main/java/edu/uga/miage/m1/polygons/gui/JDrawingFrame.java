@@ -93,7 +93,7 @@ public class JDrawingFrame extends JFrame
         jToolBar = new JToolBar("Toolbar");
 
         m_panel.setBackground(Color.WHITE);
-        m_panel.setMinimumSize(new Dimension(400, 400));
+        m_panel.setMinimumSize(new Dimension(600, 400));
         m_panel.setLayout(null);
         m_panel.addMouseListener(this);
         this.setFocusable(true);
@@ -117,7 +117,7 @@ public class JDrawingFrame extends JFrame
         addShape(Shapes.GRUMPY, new ImageIcon(Objects.requireNonNull(getClass().getResource("images/grumpy.jpg"))));
         addExportButton();
         addImportButton();
-        setPreferredSize(new Dimension(400, 400));
+        setPreferredSize(new Dimension(600, 400));
 
         selectedShapes = new ArrayList<>();
         save();
@@ -166,14 +166,15 @@ public class JDrawingFrame extends JFrame
      */
     public void addImportedXMLShapes(){
         eraseCanva();
-        NodeList nodeList = App.getXmlDoc().getElementsByTagName("shapes");
+        NodeList nodeList = App.getXmlDoc().getElementsByTagName("shape");
+        System.out.println(nodeList.getLength());
         for (int i = 0; i < nodeList.getLength(); i++) {
             Node node = nodeList.item(i);
             if (node.getNodeType() == Node.ELEMENT_NODE) {
                 Element element = (Element) node;
-                String type = element.getAttribute("type");
-                int x = Integer.parseInt(element.getAttribute("x"));
-                int y = Integer.parseInt(element.getAttribute("y"));
+                String type = element.getElementsByTagName("type").item(0).getTextContent();
+                int x = Integer.parseInt(element.getElementsByTagName("x").item(0).getTextContent());
+                int y = Integer.parseInt(element.getElementsByTagName("y").item(0).getTextContent());
                 ShapeWrapper shapeWrapper = SimpleShapeFactory.createShapeString(type, x, y);
                 shapeWrapper.draw(m_panel);
                 jShapeList.add(shapeWrapper);
@@ -214,9 +215,10 @@ public class JDrawingFrame extends JFrame
         btn.addActionListener(e -> {
             try {
                 App.FileFormat importedFormat = App.importDispatcher();
-                if (importedFormat == App.FileFormat.JSON) {
+                assert importedFormat != null;
+                if (importedFormat.equals(App.FileFormat.JSON)) {
                     addImportedJSONShapes();
-                } else if (importedFormat == App.FileFormat.XML) {
+                } else if (importedFormat.equals(App.FileFormat.XML)) {
                     addImportedXMLShapes();
                 }
             } catch (FileNotFoundException ex) {

@@ -4,6 +4,7 @@ import edu.uga.miage.m1.polygons.gui.persistence.JSonVisitor;
 import edu.uga.miage.m1.polygons.gui.persistence.XMLVisitor;
 
 import javax.json.*;
+import java.awt.*;
 import java.io.*;
 
 import java.util.List;
@@ -136,7 +137,7 @@ public static void xmlToFile(String xml) throws ParserConfigurationException, IO
             if (extension.equals("xml")) {
                 try {
                     xmlDoc =importXml(path);
-                    return FileFormat.JSON;
+                    return FileFormat.XML;
                 } catch (ParserConfigurationException | IOException | SAXException e) {
                     e.printStackTrace();
                 }
